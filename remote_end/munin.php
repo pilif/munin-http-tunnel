@@ -16,7 +16,7 @@ if (!preg_match('#^(nodes|config|fetch)#', $req)){
     }
 }
 fclose($s);
-header('Content-Length: '.strlen($req));
+header('Content-Length: '.strlen($res));
 header('Content-Type: text/plain');
 echo $res;
 
