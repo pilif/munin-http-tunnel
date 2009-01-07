@@ -1,0 +1,74 @@
+#!/usr/bin/perl
+
+package MuninHttpProxyClient;
+
+use strict;
+use warnings;
+use vars qw(@ISA);
+use Net::Server::PreFork; # any personality will do
+use LWP::UserAgent;
+use HTTP::Request::Common;
+use LWP::ConnCache;
+
+@ISA = qw(Net::Server::PreFork);
+
+die("Usage: $0 <configfile>") unless ($ARGV[0] && -r $ARGV[0]);
+
+__PACKAGE__->run(
+   'port' => 4950,
+   'conf_file' => $ARGV[0]
+);
+exit;
+
+sub options {
+  my $self = shift;
+  my $ref  = shift;
+  my $prop = $self->{server};
+  my @newo = qw(remote_url hostname); 
+
+  $self->SUPER::options($ref);
+
+  for (@newo){
+    $prop->{$_} = undef if(!exists $prop->{$_});
+    $ref->{$_} = \$prop->{$_};
+  }
+}
+
+sub process_request {
+    my $self = shift;
+    my $request;
+    my $url = $self->get_property('remote_url');
+
+    eval {
+        local $SIG{ALRM} = sub { die "Timed Out!\n" };
+	my $timeout = 120; # give the user 30 seconds to type a line
+
+	my $previous_alarm = alarm($timeout);
+	my $cache = LWP::ConnCache->new();
+	my $userAgent = LWP::UserAgent->new(agent => 'mpc', conn_cache => $cache);
+        
+        print STDOUT "# munin node at ".$self->get_property('hostname')."\n";
+	while(<STDIN>){
+            return if /^quit/;
+            return if /^\./;
+            my $res = $userAgent->request(POST $url,
+	                               Content_Type => 'text/plain',
+				       Content => $_);
+            if (!$res->is_success){
+	        print STDOUT "# connection error";
+		next;
+	    }
+	    print STDOUT $res->content;
+	}
+    };
+
+    if( $@=~/timed out/i ){
+        print STDOUT "# timeout\n";
+	return;
+    }
+     
+}
+
+
+1;
+
