@@ -41,34 +41,31 @@ sub process_request {
 
     eval {
         local $SIG{ALRM} = sub { die "Timed Out!\n" };
-	my $timeout = 120; # give the user 30 seconds to type a line
+        my $timeout = 120; # give the user 30 seconds to type a line
 
-	my $previous_alarm = alarm($timeout);
-	my $cache = LWP::ConnCache->new();
-	my $userAgent = LWP::UserAgent->new(agent => 'mpc', conn_cache => $cache);
+        my $previous_alarm = alarm($timeout);
+        my $cache = LWP::ConnCache->new();
+        my $userAgent = LWP::UserAgent->new(agent => 'mpc', conn_cache => $cache);
         
         print STDOUT "# munin node at ".$self->get_property('hostname')."\n";
-	while(<STDIN>){
+        while(<STDIN>){
             return if /^quit/;
             return if /^\./;
             my $res = $userAgent->request(POST $url,
-	                               Content_Type => 'text/plain',
-				       Content => $_);
+                                       Content_Type => 'text/plain',
+                                       Content => $_);
             if (!$res->is_success){
-	        print STDOUT "# connection error";
-		next;
-	    }
-	    print STDOUT $res->content;
-	}
+                print STDOUT "# connection error";
+                next;
+            }
+            print STDOUT $res->content;
+        }
     };
 
     if( $@=~/timed out/i ){
         print STDOUT "# timeout\n";
-	return;
+        return;
     }
-     
 }
 
-
 1;
-
