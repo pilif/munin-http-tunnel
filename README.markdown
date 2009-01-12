@@ -40,12 +40,12 @@ whatever else you like.
 
 Installation
 ------------
-1. copy remote_end/munin.php to your webserver in a directory that's
+1. copy `remote_end/munin.php` to your webserver in a directory that's
    accessible from the web. Use whatever means provided by your 
    webserver to secure the access (though authentication isn't just)
    implemented in the client at the time of this writing)
-2. Copy local_end/proxy somewhere on the master server
-3. Edit local_end/server1.conf and rename it to something sensible
+2. Copy `local_end/proxy` somewhere on the master server
+3. Edit `local_end/server1.conf` and rename it to something sensible
 4. Run proxy and pass it the path to your configuration file.
 5. Add the new node to your munin.conf
 
@@ -60,7 +60,7 @@ you need to set:
 
 * `remote_url`:
   is the publicly accessible URL of your munin.php script.
-* `hostname`*`:
+* `hostname`:
   is the hostname the proxy should report to the munin master 
   scripts. It must match the hostname in munin.conf.
 
@@ -76,9 +76,9 @@ this HTTP tunnel.
    and set a port by setting "port 4950" (or whatever)
 4. Add this to munin.conf:
 
-    [www.example.com]
-        address localhost
-        port 4950
+        [www.example.com]
+           address localhost
+           port 4950
         
 Done!
 
