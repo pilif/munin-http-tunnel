@@ -71,7 +71,7 @@ this HTTP tunnel.
 2. Place munin.php somewhere so it's accessible as 
    http://www.example.com/munin.php
 3. On you master machine, create a config-file where you set
-   remote_url to http://www.example.com/munin.php
+   `remote_url` to http://www.example.com/munin.php
    and hostname to www.example.com (or whatever)
    and set a port by setting "port 4950" (or whatever)
 4. Add this to munin.conf:
